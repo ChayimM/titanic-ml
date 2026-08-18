@@ -11,6 +11,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import StratifiedKFold
 # region Loading Dataset
 train = pd.read_csv("train.csv")
 test = pd.read_csv("test.csv")
@@ -121,26 +122,48 @@ print(confusion_matrix(y_valid, predictions))
 print("Random Forest:")
 print(confusion_matrix(y_valid, forest_predictions))
 
+cv = StratifiedKFold(
+    n_splits=5,
+    shuffle=True,
+    random_state=42
+)
+
 scores = cross_val_score(
     model,
     x,
     y,
-    cv=15,
+    cv=cv,
     scoring="accuracy"
 )
 print("Cross-validation scores:", scores)
 print(f"Mean accuracy: {scores.mean():.3f}")
 print(f"Standard deviation: {scores.std():.3f}")
 
+
+
 forest_scores = cross_val_score(
     forest_model,
     x,
     y,
-    cv=15,
+    cv=cv,
     scoring="accuracy"
 )
+print ("Test")
 
 print("Random Forest scores:", forest_scores)
 print(f"Mean accuracy: {forest_scores.mean():.3f}")
 print(f"Standard deviation: {forest_scores.std():.3f}")
+
+feature_names = model.named_steps["preprocessor"].get_feature_names_out()
+coefficients = model.named_steps["classifier"].coef_[0]
+importance = pd.Series(
+    coefficients,
+    index=feature_names
+).sort_values()
+print(
+    importance.sort_values(
+        key=abs,
+        ascending=False
+    ).head(10)
+)
 #endregion
