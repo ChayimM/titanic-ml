@@ -15,6 +15,25 @@ from sklearn.model_selection import StratifiedKFold
 # region Loading Dataset
 train = pd.read_csv("train.csv")
 test = pd.read_csv("test.csv")
+def create_features(df):
+    df = df.copy()
+
+    df["Title"] = df["Name"].str.extract(r", ([A-Za-z]+)\.")
+
+    df["FamilySize"] = df["SibSp"] + df["Parch"] + 1
+
+    df["IsAlone"] = (df["FamilySize"] == 1).astype(int)
+
+    df["IsMother"] = (
+        (df["Sex"] == "female") &
+        (df["Parch"] > 0) &
+        (df["Age"] > 18) &
+        (df["Title"] != "Miss")
+    ).astype(int)
+
+    return df
+train = create_features(train)
+test = create_features(test)
 # endregion
 # region Deciding useful variable types
 train["Title"] = train["Name"].str.extract(r", ([A-Za-z]+)\.")
@@ -50,6 +69,8 @@ feature_columns = [
 ]
 y = train["Survived"]
 x = train[feature_columns]
+
+test_x = test[feature_columns]
 # endregion
 # region Splitting training and validation
 # neither x_train nor x_valid has been modified
@@ -128,31 +149,30 @@ cv = StratifiedKFold(
     random_state=42
 )
 
-scores = cross_val_score(
-    model,
-    x,
-    y,
-    cv=cv,
-    scoring="accuracy"
-)
-print("Cross-validation scores:", scores)
-print(f"Mean accuracy: {scores.mean():.3f}")
-print(f"Standard deviation: {scores.std():.3f}")
+# scores = cross_val_score(
+#     model,
+#     x,
+#     y,
+#     cv=cv,
+#     scoring="accuracy"
+# )
+# print("Cross-validation scores:", scores)
+# print(f"Mean accuracy: {scores.mean():.3f}")
+# print(f"Standard deviation: {scores.std():.3f}")
 
 
 
-forest_scores = cross_val_score(
-    forest_model,
-    x,
-    y,
-    cv=cv,
-    scoring="accuracy"
-)
-print ("Test")
+# forest_scores = cross_val_score(
+#     forest_model,
+#     x,
+#     y,
+#     cv=cv,
+#     scoring="accuracy"
+# )
 
-print("Random Forest scores:", forest_scores)
-print(f"Mean accuracy: {forest_scores.mean():.3f}")
-print(f"Standard deviation: {forest_scores.std():.3f}")
+# print("Random Forest scores:", forest_scores)
+# print(f"Mean accuracy: {forest_scores.mean():.3f}")
+# print(f"Standard deviation: {forest_scores.std():.3f}")
 
 feature_names = model.named_steps["preprocessor"].get_feature_names_out()
 coefficients = model.named_steps["classifier"].coef_[0]
@@ -166,4 +186,46 @@ print(
         ascending=False
     ).head(10)
 )
+
+# final predictions
+model.fit(x, y)
+test_predictions = model.predict(test_x)
+submission = pd.DataFrame({
+    "PassengerId": test["PassengerId"],
+    "Survived": test_predictions
+})
+submission.to_csv("submission.csv", index=False)
+
+print(submission.head())
+print(submission.shape)
+print(submission["Survived"].value_counts())
+#endregion
+#region Experimentation
+
+
+print("TRAIN")
+print(train[["Pclass", "Sex", "Age", "Fare"]].describe())
+
+print("\nTEST")
+print(test[["Pclass", "Sex", "Age", "Fare"]].describe())
+
+
+print("\nTRAIN SEX")
+print(train["Sex"].value_counts(normalize=True))
+
+print("\nTEST SEX")
+print(test["Sex"].value_counts(normalize=True))
+
+print("\nTRAIN CLASS")
+print(train["Pclass"].value_counts(normalize=True))
+
+print("\nTEST CLASS")
+print(test["Pclass"].value_counts(normalize=True))
+
+print("\nTRAIN MISSING")
+print(train.isnull().sum())
+
+print("\nTEST MISSING")
+print(test.isnull().sum())
+
 #endregion
