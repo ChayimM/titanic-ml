@@ -1,0 +1,26 @@
+==================================================
+FINAL MODEL COMPARISON
+==================================================
+                  Model  Mean   Std   Min   Max
+    Logistic Regression 0.819 0.023 0.770 0.871
+          Random Forest 0.813 0.023 0.764 0.860
+      Gradient Boosting 0.824 0.021 0.770 0.865
+Tuned Gradient Boosting 0.834 0.020 0.792 0.876
+
+
+
+Model comparison
+
+Four model configurations were evaluated using repeated stratified 5-fold cross-validation.
+Logistic Regression provided a strong and relatively stable baseline, while Random Forest did not outperform it on this dataset.
+
+Gradient Boosting initially produced only a modest improvement over the other models.
+Hyperparameter optimization using GridSearchCV subsequently improved its repeated cross-validation performance to approximately 0.834 accuracy.
+
+The tuned Gradient Boosting model therefore became the preferred model for the final submission.
+However, the improvement over Logistic Regression was relatively modest, demonstrating that increased model complexity does not 
+automatically produce substantially better results.
+
+The difference between the best single validation score and repeated cross-validation performance also demonstrated the importance of robust evaluation. 
+A single validation split produced an accuracy of 0.894 for the tuned model, while repeated cross-validation produced a substantially more 
+conservative estimate. This reinforced the importance of evaluating model performance across multiple samples rather than relying on a single split.

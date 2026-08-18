@@ -1,0 +1,34 @@
+Best CV score: 0.847
+ param_classifier__learning_rate  param_classifier__max_iter  mean_test_score  std_test_score
+                            0.10                          50         0.847348        0.016557
+                            0.05                         100         0.842872        0.012816
+                            0.02                         150         0.839495        0.016224
+                            0.01                         200         0.838391        0.011896
+                            0.05                         150         0.838384        0.016808
+                            0.02                         100         0.837267        0.009951
+                            0.01                         150         0.837261        0.005038
+                            0.02                         200         0.837248        0.015614
+                            0.05                          50         0.836131        0.011008
+                            0.10                         100         0.835013        0.021518
+                            0.05                         200         0.835007        0.027483
+                            0.10                         150         0.833877        0.024617
+                            0.02                          50         0.832766        0.012070
+                            0.01                         100         0.832766        0.012070
+                            0.20                          50         0.829402        0.016157
+                            0.20                         150         0.826025        0.026431
+                            0.10                         200         0.826018        0.027632
+                            0.20                         100         0.823771        0.024396
+                            0.20                         200         0.817055        0.026523
+                            0.01                          50         0.803547        0.022219
+
+
+
+Tuned Gradient Boosting - Repeated Cross-Validation
+Mean: 0.834
+Std:  0.020
+Min:  0.792
+Max:  0.876
+
+Hyperparameter tuning improved Gradient Boosting's repeated 5×10-fold CV accuracy from
+approximately 0.821 to 0.834. The improvement is modest but appears more credible than
+the 0.894 single-validation result because it persists under repeated cross-validation.
